@@ -1,4 +1,5 @@
 ﻿using MapAssist.Helpers;
+using MapAssist.Integrations;
 using MapAssist.Settings;
 using MapAssist.Types;
 using System;
@@ -164,6 +165,16 @@ namespace MapAssist
             }
 
             chkDPIAware.Checked = MapAssistConfiguration.Loaded.DPIAware;
+
+            foreach (IIntegration integration in Program.Integrations)
+            {
+                var control = integration.ConfigurationControls;
+                control.Dock = DockStyle.Fill;
+                if (control == null) continue;
+                var integrationTab = new TabPage(integration.Name);
+                integrationTab.Controls.Add(control);
+                integrationTabs.TabPages.Add(integrationTab);
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

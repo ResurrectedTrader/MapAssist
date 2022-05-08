@@ -180,6 +180,8 @@
             this.chkDPIAware = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.chkShowDistanceToItem = new System.Windows.Forms.CheckBox();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.integrationTabs = new System.Windows.Forms.TabControl();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -215,6 +217,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBoxAuthorizedWindowTitle.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            this.tabPage8.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -229,6 +232,7 @@
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -2049,7 +2053,7 @@
             this.chkDPIAware.Text = "DPI Awareness";
             this.chkDPIAware.UseVisualStyleBackColor = true;
             this.chkDPIAware.CheckedChanged += new System.EventHandler(this.chkDPIAware_CheckedChanged);
-            // 
+            //
             // chkShowDistanceToItem
             // 
             this.chkShowDistanceToItem.AutoSize = true;
@@ -2060,6 +2064,27 @@
             this.chkShowDistanceToItem.Text = "Show Item Distance / Picked Up";
             this.chkShowDistanceToItem.UseVisualStyleBackColor = true;
             this.chkShowDistanceToItem.CheckedChanged += new System.EventHandler(this.chkShowDistanceToItem_CheckedChanged);
+            //
+            // tabPage8
+            //
+            this.tabPage8.Controls.Add(this.integrationTabs);
+            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Size = new System.Drawing.Size(412, 325);
+            this.tabPage8.TabIndex = 7;
+            this.tabPage8.Text = "Integration";
+            this.tabPage8.UseVisualStyleBackColor = true;
+            //
+            // integrationTabs
+            //
+            this.integrationTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                    | System.Windows.Forms.AnchorStyles.Left)
+                | System.Windows.Forms.AnchorStyles.Right)));
+            this.integrationTabs.Location = new System.Drawing.Point(3, 3);
+            this.integrationTabs.Name = "integrationTabs";
+            this.integrationTabs.SelectedIndex = 0;
+            this.integrationTabs.Size = new System.Drawing.Size(406, 319);
+            this.integrationTabs.TabIndex = 0;
             // 
             // ConfigEditor
             // 
@@ -2124,6 +2149,7 @@
             this.groupBoxAuthorizedWindowTitle.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2281,5 +2307,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtAuthorizedWindowTitle;
         private System.Windows.Forms.CheckBox chkShowDistanceToItem;
+        private System.Windows.Forms.TabPage tabPage8;
+        private System.Windows.Forms.TabControl integrationTabs;
     }
 }

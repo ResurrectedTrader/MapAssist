@@ -1,8 +1,11 @@
 using Gma.System.MouseKeyHook;
 using MapAssist.Helpers;
+using MapAssist.Integrations;
+using MapAssist.Integrations.ResurrectedTrade;
 using MapAssist.Settings;
 using NLog;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -22,6 +25,9 @@ namespace MapAssist
         private static ConfigEditor configEditor;
         private static NotifyIcon trayIcon;
         private static Overlay overlay;
+        private static List<IIntegration> _integrations = new List<IIntegration>();
+        public static IReadOnlyList<IIntegration> Integrations => _integrations;
+
         private static BackgroundWorker backWorkOverlay = new BackgroundWorker();
         private static IKeyboardMouseEvents globalHook = Hook.GlobalEvents();
         private static readonly Logger _log = LogManager.GetCurrentClassLogger();
@@ -89,29 +95,50 @@ namespace MapAssist
                         return;
                     }
 
-                    var contextMenu = new ContextMenuStrip();
-
-                    var configMenuItem = new ToolStripMenuItem("Config", null, ShowConfigEditor);
-                    var lootFilterMenuItem = new ToolStripMenuItem("Loot Filter", null, LootFilter);
-                    var restartMenuItem = new ToolStripMenuItem("Restart", null, TrayRestart);
-                    var exitMenuItem = new ToolStripMenuItem("Exit", null, TrayExit);
-                    contextMenu.Items.Add(exitMenuItem);
-
-                    contextMenu.Items.AddRange(new ToolStripItem[] {
-                        configMenuItem,
-                        lootFilterMenuItem,
-                        new ToolStripSeparator(),
-                        restartMenuItem,
-                        exitMenuItem
-                    });
-
-                    trayIcon = new NotifyIcon()
+                    trayIcon = new NotifyIcon
                     {
                         Icon = Properties.Resources.Icon1,
-                        ContextMenuStrip = contextMenu,
                         Text = appName,
                         Visible = true
                     };
+
+                    var uiThreadContext = new WindowsFormsSynchronizationContext();
+
+                    _integrations.Add(
+                        new ResurrectedTradeIntegration(uiThreadContext, trayIcon)
+                    );
+
+                    var contextMenu = new ContextMenuStrip();
+                    var configMenuItem = new ToolStripMenuItem("Config", null, ShowConfigEditor);
+                    var lootFilterMenuItem = new ToolStripMenuItem("Loot Filter", null, LootFilter);
+                    contextMenu.Items.Add(configMenuItem);
+                    contextMenu.Items.Add(lootFilterMenuItem);
+                    contextMenu.Items.Add(new ToolStripSeparator());
+                    var integrationAdded = false;
+
+                    foreach (IIntegration integration in Integrations)
+                    {
+                        var integrationMenus = integration.ContextMenuItems;
+                        if (integrationMenus != null && integrationMenus.Length > 0)
+                        {
+                            integrationAdded = true;
+                            var integrationMenu = new ToolStripMenuItem(integration.Name, null, integrationMenus);
+                            contextMenu.Items.Add(integrationMenu);
+                        }
+                    }
+
+                    if (integrationAdded)
+                    {
+                        contextMenu.Items.Add(new ToolStripSeparator());
+                    }
+
+                    var restartMenuItem = new ToolStripMenuItem("Restart", null, TrayRestart);
+                    var exitMenuItem = new ToolStripMenuItem("Exit", null, TrayExit);
+                    contextMenu.Items.Add(restartMenuItem);
+                    contextMenu.Items.Add(exitMenuItem);
+
+                    trayIcon.ContextMenuStrip = contextMenu;
+                    trayIcon.DoubleClick += ShowConfigEditor;
 
                     globalHook.KeyDown += (sender, args) =>
                     {
@@ -121,7 +148,7 @@ namespace MapAssist
                         }
                     };
 
-                    backWorkOverlay.DoWork += new DoWorkEventHandler(RunOverlay);
+                    backWorkOverlay.DoWork += RunOverlay;
                     backWorkOverlay.WorkerSupportsCancellation = true;
                     backWorkOverlay.RunWorkerAsync();
 
@@ -147,6 +174,10 @@ namespace MapAssist
 
         public static void RunOverlay(object sender, DoWorkEventArgs e)
         {
+            if (Thread.CurrentThread.Name == null)
+            {
+                Thread.CurrentThread.Name = "Overlay Thread";
+            }
             using (overlay = new Overlay())
             {
                 overlay.Run();
