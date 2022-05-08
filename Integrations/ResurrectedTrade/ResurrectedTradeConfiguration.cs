@@ -58,6 +58,10 @@ namespace MapAssist.Integrations.ResurrectedTrade
             {
                 StatusLabel.Text = string.Join(", ", response.Errors.Select(o => o.Description));
             }
+            else
+            {
+                Password.Text = "";
+            }
         }
 
         private void RegisterButton_Click(object sender, EventArgs e)
